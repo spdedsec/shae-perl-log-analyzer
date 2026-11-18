@@ -1,0 +1,45 @@
+.name: shae-perl-log-analyzer
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Perl
+        uses: shivammathur/setup-perl@v2
+        with:
+          perl-version: "5.34"
+
+      - name: Run local test (make test)
+        run: make test
+
+      - name: Build source archive
+        run: |
+          mkdir -p dist
+          tar czf dist/shae-perl-log-analyzer-0.1.0-src.tar.gz \
+            --exclude='.git' \
+            src scripts Makefile README.md DESIGN.md LICENSE docs .github
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.1.0 \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "shae-perl-log-analyzer v0.1.0" \
+            --notes "Initial release. Dependency-free Perl access-log analyzer CLI.
+
+Report sections: top IPs, top endpoints, status code distribution,
+bytes transferred, requests per hour heatmap.
+
+See README.md for usage." \
+            dist/shae-perl-log-analyzer-0.1.0-src.tar.gz

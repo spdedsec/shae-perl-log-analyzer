@@ -1,0 +1,19 @@
+# Perl
+*.pl.bak
+*.orig
+*.swp
+*.swo
+
+# Build / dist
+dist/
+blib/
+_make/
+pm_to_blib/
+
+# Testing
+/tmp/shae-access.log
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
